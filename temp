@@ -1,3 +1,5 @@
+-- up to 53
+
 function love.load()
     wf = require 'libraries/windfield/windfield'
     world = wf.newWorld(0, 1500, false)
