@@ -185,5 +185,12 @@ end
 
 
 
+-- nov 14
 
+local colliders = world:queryRectangleArea(flagX_a, flag_a, 200, 200, {'Player'})
+    if #colliders > 0 then
+        if currentLevel == 'level2' then
+            loadMap('level1')
+        end
+    end
 
