@@ -1,15 +1,25 @@
 function love.load()
+    anim8 = require 'libraries/anim8/anim8'
+
+    sprites = {}
+    sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
+
+    local grid = anim8.newGrid(205, 203, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
+
+    animations = {}
+    animations.idle = anim8.newAnimation(grid('1-1', 1), 0.1)
+    animations.run = anim8.newAnimation(grid('2-4', 1), 0.1)
+    animations.jump = anim8.newAnimation(grid('5-5', 1), 0.1)
+
     wf = require 'libraries/windfield/windfield'
-    world = wf.newWorld(0, 1500, false)
+    world = wf.newWorld(0, 3000, false)
     world:setQueryDebugDrawing(true)
 
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')
     world:addCollisionClass('Danger')
 
-    player = world:newRectangleCollider(360, 100, 80, 80, {collision_class = 'Player'})
-    player:setFixedRotation(true)
-    player.speed = 240
+    require('player')    
     
     platform = world:newRectangleCollider(250, 400, 300, 100, {collision_class = 'Platform'})
     platform:setType('static')
@@ -20,31 +30,19 @@ end
 
 function love.update(dt)
     world:update(dt)
-
-    if player.body then
-        local px, py = player:getPosition()
-        if love.keyboard.isDown('right') then
-            player:setX(px + player.speed * dt)
-        end
-        if love.keyboard.isDown('left') then
-            player:setX(px - player.speed * dt)
-        end
-
-        if player:enter('Danger') then
-            player:destroy()
-        end
-    end
+    playerUpdate(dt)
 end
 
 function love.draw()
     world:draw()
+    drawPlayer()
 end
 
 function love.keypressed(key)
     if key == 'up' then
-        local colliders = world:queryRectangleArea(player:getX()-40, player:getY()+40, 80, 2, {'Platform'})
-        if #colliders > 0 then
-            player:applyLinearImpulse(0, -10000)
+        if player.grounded == true then
+            player:applyLinearImpulse(0, -20000)
+            player.animation = animations.jump
         end
     end
 end
