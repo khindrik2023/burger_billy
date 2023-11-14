@@ -9,8 +9,8 @@ return {
   height = 12,
   tilewidth = 64,
   tileheight = 64,
-  nextlayerid = 8,
-  nextobjectid = 30,
+  nextlayerid = 9,
+  nextobjectid = 32,
   properties = {},
   tilesets = {
     {
@@ -109,7 +109,7 @@ return {
       type = "objectgroup",
       draworder = "topdown",
       id = 7,
-      name = "Flag",
+      name = "warpForward",
       class = "",
       visible = true,
       opacity = 1,
@@ -133,6 +133,21 @@ return {
           properties = {}
         }
       }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 8,
+      name = "warpBack",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {}
     },
     {
       type = "objectgroup",

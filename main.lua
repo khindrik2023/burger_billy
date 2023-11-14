@@ -1,3 +1,6 @@
+-----------------------------------------------------------------
+-- LOVE.LOAD() --------------------------------------------------
+
 function love.load()
     love.window.setMode(1000, 768)
 
@@ -6,6 +9,17 @@ function love.load()
     cameraFile = require 'libraries/hump/camera'
 
     cam = cameraFile()
+
+    -- music and sfx
+    sounds = {}
+    sounds.jump = love.audio.newSource("audio/Alberto Sueri - 8 Bit Fun - Classic Jump Glide Up Bleep.wav", 'static')
+    sounds.jump:setVolume(.5)
+    sounds.warp = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Power up Trophy .wav", 'static')
+    sounds.music = love.audio.newSource("audio/Kashido - Swan Lake Theme.wav", 'stream')
+    sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
+    sounds.music:setLooping(true)
+    sounds.music:setVolume(0.5)
+    sounds.music:play()
 
     sprites = {}
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
@@ -36,14 +50,20 @@ function love.load()
 
     platforms = {}
 
-    flagX = 0
-    flagY = 0
+    -- these tracks the location of warpzone objects
+    warpX_forward = 0
+    warpY_forward = 0
+    warpX_back = 0
+    warpX_back = 0
 
-    currentLevel = "level1"
-
+    -- keeps track of levels and load initial level
+    -- "currentLevel" is updated in love.update()
+    currentLevel = 1
     loadMap(currentLevel)
 end
 
+-----------------------------------------------------------
+-- LOVE.UPDATE() ------------------------------------------
 
 function love.update(dt)
     world:update(dt)
@@ -54,21 +74,32 @@ function love.update(dt)
     local px, py = player:getPosition()
     cam:lookAt(px, love.graphics.getHeight()/2)
 
-    -- query for letters and changing levels
-    local colliders = world:queryRectangleArea(flagX, flagY, 200, 200, {'Player'})
+    -- query used for warpzones that advance to next level 
+    -- see "warpForward" in loadMap()
+    local colliders = world:queryRectangleArea(warpX_forward, warpY_forward, 200, 200, {'Player'})
     if #colliders > 0 then
-        if currentLevel == 'level2' then
-            loadMap('level1')
-        elseif currentLevel == 'level1' then
-            loadMap('level2')
-        end
+        currentLevel = currentLevel + 1
+        loadMap(currentLevel)
+        sounds.warp:play()
+
+    end
+
+    -- query used for warpzones that go back to previous level 
+    -- see "warpBack" in loadMap()
+    local colliders = world:queryRectangleArea(warpX_back, warpY_back, 200, 200, {'Player'})
+    if #colliders > 0 then
+        currentLevel = currentLevel - 1
+        loadMap(currentLevel)
     end
 end
+
+---------------------------------------------------------------
+-- LOVE.DRAW() ------------------------------------------------
 
 function love.draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-        world:draw()
+        --world:draw()
         drawPlayer()
         drawEnemies()
     cam:detach()
@@ -79,10 +110,12 @@ function love.keypressed(key)
         if player.grounded == true then
             player:applyLinearImpulse(0, -20000)
             player.animation = animations.jump
+            sounds.jump:play()
         end
     end
 end
 
+--[[
 function love.mousepressed(x, y, button)
     if button == 1 then
         local colliders = world:queryCircleArea(x, y, 200, {'Platform', 'Danger'})
@@ -93,6 +126,7 @@ function love.mousepressed(x, y, button)
         end
     end
 end
+]]
 
 function spawnPlatform(x, y, width, height)
     if width > 0 and height > 0 then
@@ -122,21 +156,37 @@ function destroyAll()
     end
 end
 
+---------------------------------------------------------
+-- LOADMAP ----------------------------------------------
+-- this function spawns the graphics for 
+-- the "Platforms", "Enemies", and "warpForward" objects.
+-- the value for "mapName" is determined from a query
+-- in love.update()
 
-function loadMap(mapName)
-    currentLevel = mapName
+function loadMap(currentLevel)
+    mapName = "level" .. currentLevel
     destroyAll()
     player:setPosition(300, 100)
     gameMap = sti("maps/" .. mapName .. ".lua")
+
+    warpX_forward = 0
+    warpY_forward = 0
+    warpX_back = 0
+    warpY_back = 0
+
     for i, obj in pairs(gameMap.layers["Platforms"].objects) do
         spawnPlatform(obj.x, obj.y, obj.width, obj.height)
     end
     for i, obj in pairs(gameMap.layers["Enemies"].objects) do
         spawnEnemy(obj.x, obj.y)
     end
-    for i, obj in pairs(gameMap.layers["Flag"].objects) do
-        flagX = obj.x
-        flagY = obj.y
+    for i, obj in pairs(gameMap.layers["warpForward"].objects) do
+        warpX_forward = obj.x
+        warpY_forward = obj.y
+    end
+    for i, obj in pairs(gameMap.layers["warpBack"].objects) do
+        warpX_back = obj.x
+        warpY_back = obj.y
     end
 end
 
