@@ -1,8 +1,18 @@
------------------------------------------------------------------
--- LOVE.LOAD() --------------------------------------------------
 
+-- LOVE.LOAD() --------------------------------------------------
 function love.load()
     love.window.setMode(1000, 768)
+    gameState = 'wordInput'
+    wordInput = '' -- user input for word that they want to spell
+    playerWord = '' -- stores wordInput
+    characters = {} -- stores individual characters of wordInput
+    wordLength = 0
+    charIndex = 0
+    currentLevel = 1
+    previousLevel = 1
+    blinkTimer = 0
+    isBlinking = true
+    blinkInterval = 0.5
 
     anim8 = require 'libraries/anim8/anim8'
     sti = require 'libraries/Simple-Tiled-Implementation/sti'
@@ -13,17 +23,22 @@ function love.load()
     -- music and sfx
     sounds = {}
     sounds.jump = love.audio.newSource("audio/Alberto Sueri - 8 Bit Fun - Classic Jump Glide Up Bleep.wav", 'static')
-    sounds.jump:setVolume(.5)
+    sounds.jump:setVolume(.4)
     sounds.warp = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Power up Trophy .wav", 'static')
     sounds.music = love.audio.newSource("audio/Kashido - Swan Lake Theme.wav", 'stream')
+    sounds.endMusic = love.audio.newSource('audio/T. Bless - Froggy Fraud Adventure.wav', 'stream')
     sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
+    sounds.finish = love.audio.newSource('audio/Sound Response - 8 Bit Jingles - Glide up Win.wav', 'static')
+    finishSoundPlayed = false
     sounds.music:setLooping(true)
     sounds.music:setVolume(0.5)
     sounds.music:play()
+    
 
     sprites = {}
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
     sprites.enemySheet = love.graphics.newImage('sprites/enemySheet.png')
+    sprites.background = love.graphics.newImage('sprites/background.png')
 
     local grid = anim8.newGrid(205, 203, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
     local enemyGrid = anim8.newGrid(492, 494, 492, 494)
@@ -51,66 +66,169 @@ function love.load()
     platforms = {}
 
     -- these tracks the location of warpzone objects
-    warpX_forward = 0
-    warpY_forward = 0
-    warpX_back = 0
-    warpX_back = 0
+    warpX = 0
+    warpY = 0
+    backX = 0
+    backY = 0
 
     -- keeps track of levels and load initial level
     -- "currentLevel" is updated in love.update()
-    currentLevel = 1
+    if #characters > 0 then
+        local char = string.byte(characters[1])
+        if char >= 97 and char <=122 then
+            currentLevel = char
+        else
+            currentLevel = 1 -- default level 1 if something goes wrong
+        end
+    else
+        currentLevel = 1 -- assigned default level 1 if something goes wrong
+    end
+
     loadMap(currentLevel)
+
+    testFont = love.graphics.newFont(20)
+    awesomeFont = love.graphics.newFont('font/8bit16.ttf', 30)
 end
 
------------------------------------------------------------
 -- LOVE.UPDATE() ------------------------------------------
-
 function love.update(dt)
     world:update(dt)
     gameMap:update(dt)
     playerUpdate(dt) 
     updateEnemies(dt)   
 
-    local px, py = player:getPosition()
-    cam:lookAt(px, love.graphics.getHeight()/2)
+    if player.body then
+        local px, py = player:getPosition()
+        cam:lookAt(px, love.graphics.getHeight()/2)
 
-    -- query used for warpzones that advance to next level 
-    -- see "warpForward" in loadMap()
-    local colliders = world:queryRectangleArea(warpX_forward, warpY_forward, 200, 200, {'Player'})
-    if #colliders > 0 then
-        currentLevel = currentLevel + 1
-        loadMap(currentLevel)
-        sounds.warp:play()
+        -- checks to see if charIndex == wordLength, 
+        -- which means the word has been spelled successfully.
+        if charIndex == wordLength + 1 then
+            gameState = 'congratulations'
+            charIndex = 1
+        end
 
+        -- query used to check for warpzones to advance to next level 
+        local colliders = world:queryRectangleArea(warpX, warpY, 200, 200, {'Player'})
+        if #colliders > 0 then
+            previousLevel = currentLevel
+            charIndex = charIndex + 1
+            if charIndex < wordLength + 1 then
+                currentLevel = string.byte(characters[charIndex]) - 96
+                loadMap(currentLevel)
+                sounds.warp:play()
+            end
+        end
+
+        if gameState == 'wordInput' or gameState == 'playing' then
+            sounds.endMusic:stop()
+            sounds.endMusic:play()
+        end
+ 
+        if gameState == 'congratulations' then
+            if not finishSoundPlayed then
+                sounds.finish:play()
+                finishSoundPlayed = true
+            end
+            sounds.music:stop()
+            sounds.endMusic:play()
+        end
     end
 
-    -- query used for warpzones that go back to previous level 
-    -- see "warpBack" in loadMap()
-    local colliders = world:queryRectangleArea(warpX_back, warpY_back, 200, 200, {'Player'})
-    if #colliders > 0 then
-        currentLevel = currentLevel - 1
-        loadMap(currentLevel)
+    blinkTimer = blinkTimer + dt
+    if blinkTimer >= blinkInterval then
+        isBlinking = not isBlinking  
+        blinkTimer = 0 
     end
 end
 
----------------------------------------------------------------
 -- LOVE.DRAW() ------------------------------------------------
-
 function love.draw()
-    cam:attach()
-        gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-        --world:draw()
-        drawPlayer()
-        drawEnemies()
-    cam:detach()
+    love.graphics.draw(sprites.background, 0, 0)
+
+    if gameState == 'wordInput' then
+        love.graphics.setFont(awesomeFont)
+        local textWidth = love.graphics.getWidth() 
+        love.graphics.printf("Enter Word to Spell:", 0, love.graphics.getHeight()/2 - 50, textWidth, 'center') 
+        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2, textWidth, 'center')
+        
+    elseif gameState == 'playing' then
+        love.graphics.setFont(testFont)
+        local textWidth = love.graphics.getWidth()  
+        love.graphics.printf("word: " .. playerWord, 10, 20, textWidth, 'left')
+        love.graphics.printf("length: " .. wordLength, 10, 40, textWidth, 'left')
+        love.graphics.printf("charIndex: " .. charIndex, 10, 60, textWidth, 'left')
+        if charIndex < wordLength + 1 then
+            love.graphics.printf("characters: " .. characters[charIndex], 10, 80, textWidth, 'left')
+            love.graphics.printf("ASCII: " .. string.byte(characters[charIndex])-96, 10, 100, textWidth, 'left')
+        end
+
+        -- this prints the current spelled letters on screen so user can keep track of the word
+        if charIndex >= 2 and charIndex <= #characters then
+            local currentWord = ""
+            for i = 1, charIndex - 1 do
+                currentWord = currentWord .. characters[i]
+            end
+            love.graphics.setFont(awesomeFont)
+            --love.graphics.printf("Spell the Word", 10, 50, textWidth, 'center', nil, 1, nil)     
+            love.graphics.printf(currentWord, 10, 80, textWidth, 'center', nil, 3, nil, 335)     
+        end
+    
+        cam:attach()
+            gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
+            world:draw()
+            drawPlayer()
+            drawEnemies()
+        cam:detach()
+
+    elseif gameState == 'congratulations' then    
+        love.graphics.setFont(awesomeFont)
+        local textWidth = love.graphics.getWidth()  
+        if isBlinking then
+            love.graphics.printf(playerWord, 10, 80, textWidth, 'center', nil, 3, nil, 335)     
+        end
+        love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
+        love.graphics.printf('You Spelled "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
+        love.graphics.printf('Press "Enter" to Play Again!', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
+    end 
+end
+
+-- OTHER FUNCTIONS -----------------------------------------
+function love.textinput(t)
+    if gameState == 'wordInput' then
+        wordInput = wordInput .. t
+    end
 end
 
 function love.keypressed(key)
-    if key == 'up' then
-        if player.grounded == true then
-            player:applyLinearImpulse(0, -20000)
-            player.animation = animations.jump
-            sounds.jump:play()
+    if gameState == 'wordInput' then
+        if key == 'return' then
+            playerWord = string.lower(wordInput)
+            --separate user input into separate characters
+            characters = {}
+            wordLength = string.len(playerWord)
+            charIndex = 1
+            for i = 1, #playerWord do
+                local letter = wordInput:sub(i, i)
+                table.insert(characters, string.lower(letter))
+            end
+            currentLevel = string.byte(characters[1]) - 96
+            gameState = 'playing'
+            loadMap(currentLevel)
+        elseif key == 'backspace' then
+            wordInput = wordInput:sub(1, -2) -- allows backspaces to remove characters
+        end
+    elseif gameState == 'congratulations' then
+        if key == 'return' then
+            resetGame()
+        end
+    else
+        if key == 'up' then
+            if player.grounded == true then
+                player:applyLinearImpulse(0, -20000)
+                player.animation = animations.jump
+                sounds.jump:play()
+            end
         end
     end
 end
@@ -156,7 +274,7 @@ function destroyAll()
     end
 end
 
----------------------------------------------------------
+
 -- LOADMAP ----------------------------------------------
 -- this function spawns the graphics for 
 -- the "Platforms", "Enemies", and "warpForward" objects.
@@ -166,13 +284,9 @@ end
 function loadMap(currentLevel)
     mapName = "level" .. currentLevel
     destroyAll()
-    player:setPosition(300, 100)
+    player:setPosition(150, 100)
+    
     gameMap = sti("maps/" .. mapName .. ".lua")
-
-    warpX_forward = 0
-    warpY_forward = 0
-    warpX_back = 0
-    warpY_back = 0
 
     for i, obj in pairs(gameMap.layers["Platforms"].objects) do
         spawnPlatform(obj.x, obj.y, obj.width, obj.height)
@@ -180,13 +294,28 @@ function loadMap(currentLevel)
     for i, obj in pairs(gameMap.layers["Enemies"].objects) do
         spawnEnemy(obj.x, obj.y)
     end
-    for i, obj in pairs(gameMap.layers["warpForward"].objects) do
-        warpX_forward = obj.x
-        warpY_forward = obj.y
-    end
-    for i, obj in pairs(gameMap.layers["warpBack"].objects) do
-        warpX_back = obj.x
-        warpY_back = obj.y
-    end
+    for i, obj in pairs(gameMap.layers["Warp"].objects) do
+        warpX = obj.x
+        warpY = obj.y
+    end   
+end
+
+function resetGame()
+    -- Reset all game variables and state to their initial values
+    gameState = 'wordInput'
+    wordInput = ''
+    playerWord = ''
+    characters = {}
+    wordLength = 0
+    charIndex = 0
+    finishSoundPlayed = false
+
+    player:setPosition(150, 100)
+
+    destroyAll()
+    loadMap(1) 
+
+    sounds.endMusic:stop()
+    sounds.music:play()
 end
 

@@ -51,7 +51,7 @@ end
 
 function drawPlayer()
     local px, py = player:getPosition()
-    player.animation:draw(sprites.playerSheet, px, py, nil, .5*player.direction, .5, 100, 100)
+    player.animation:draw(sprites.playerSheet, px, py, nil, .5*player.direction, .5, 100, 95)
 end
 
 
