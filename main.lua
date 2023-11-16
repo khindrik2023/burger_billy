@@ -2,7 +2,7 @@
 -- LOVE.LOAD() --------------------------------------------------
 function love.load()
     love.window.setMode(1000, 768)
-    gameState = 'wordInput'
+    gameState = 'intro'
     wordInput = '' -- user input for word that they want to spell
     playerWord = '' -- stores wordInput
     characters = {} -- stores individual characters of wordInput
@@ -23,7 +23,7 @@ function love.load()
     -- music and sfx
     sounds = {}
     sounds.jump = love.audio.newSource("audio/Alberto Sueri - 8 Bit Fun - Classic Jump Glide Up Bleep.wav", 'static')
-    sounds.jump:setVolume(.4)
+    sounds.jump:setVolume(.5)
     sounds.warp = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Power up Trophy .wav", 'static')
     sounds.music = love.audio.newSource("audio/Kashido - Swan Lake Theme.wav", 'stream')
     sounds.endMusic = love.audio.newSource('audio/T. Bless - Froggy Fraud Adventure.wav', 'stream')
@@ -37,7 +37,7 @@ function love.load()
 
     sprites = {}
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
-    sprites.enemySheet = love.graphics.newImage('sprites/enemySheet.png')
+    sprites.enemySheet = love.graphics.newImage('sprites/pixel_art_burger_by_artfritz_dg2krlu-fullview.png')
     sprites.background = love.graphics.newImage('sprites/background.png')
 
     local grid = anim8.newGrid(205, 203, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
@@ -88,6 +88,10 @@ function love.load()
 
     testFont = love.graphics.newFont(20)
     awesomeFont = love.graphics.newFont('font/8bit16.ttf', 30)
+    awesomeFontbig = love.graphics.newFont('font/8bit16.ttf', 60)
+    awesomeFontbigger = love.graphics.newFont('font/8bit16.ttf', 100)
+
+
 end
 
 -- LOVE.UPDATE() ------------------------------------------
@@ -144,13 +148,26 @@ end
 
 -- LOVE.DRAW() ------------------------------------------------
 function love.draw()
-    love.graphics.draw(sprites.background, 0, 0)
+    if gameState == 'playing' or gameState == 'congratulations' then
+        love.graphics.draw(sprites.background, 0, 0)
+    end
 
+    if gameState == 'intro' then
+        love.graphics.setFont(testFont)
+        local textWidth = love.graphics.getWidth() 
+        love.graphics.printf("intro screen", 0, love.graphics.getHeight()/2 - 50, textWidth, 'center') 
+    end
     if gameState == 'wordInput' then
         love.graphics.setFont(awesomeFont)
         local textWidth = love.graphics.getWidth() 
-        love.graphics.printf("Enter Word to Spell:", 0, love.graphics.getHeight()/2 - 50, textWidth, 'center') 
-        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2, textWidth, 'center')
+        love.graphics.printf("Billy can't read because", 0, love.graphics.getHeight()/2 - 180, textWidth, 'center') 
+        love.graphics.printf("he's too busy eating burgers.", 0, love.graphics.getHeight()/2 - 145, textWidth, 'center') 
+        love.graphics.printf("Help Billy stop eating", 0, love.graphics.getHeight()/2 - 110, textWidth, 'center') 
+        love.graphics.printf("and start reading!", 0, love.graphics.getHeight()/2 - 75, textWidth, 'center') 
+        love.graphics.printf("Enter Word:", 0, love.graphics.getHeight()/2, textWidth, 'center') 
+        
+        love.graphics.setFont(awesomeFontbig)
+        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 50, textWidth, 'center')
         
     elseif gameState == 'playing' then
         love.graphics.setFont(testFont)
@@ -169,27 +186,28 @@ function love.draw()
             for i = 1, charIndex - 1 do
                 currentWord = currentWord .. characters[i]
             end
-            love.graphics.setFont(awesomeFont)
-            --love.graphics.printf("Spell the Word", 10, 50, textWidth, 'center', nil, 1, nil)     
-            love.graphics.printf(currentWord, 10, 80, textWidth, 'center', nil, 3, nil, 335)     
+            love.graphics.setFont(awesomeFontbigger)
+            love.graphics.printf(currentWord, 10, 90, textWidth, 'center')     
         end
     
         cam:attach()
             gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-            world:draw()
+            --world:draw()
             drawPlayer()
             drawEnemies()
         cam:detach()
 
     elseif gameState == 'congratulations' then    
-        love.graphics.setFont(awesomeFont)
         local textWidth = love.graphics.getWidth()  
         if isBlinking then
-            love.graphics.printf(playerWord, 10, 80, textWidth, 'center', nil, 3, nil, 335)     
+            love.graphics.setFont(awesomeFontbigger)
+            love.graphics.printf(playerWord, 10, 130, textWidth, 'center')     
         end
+        love.graphics.setFont(awesomeFont)
         love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
-        love.graphics.printf('You Spelled "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
-        love.graphics.printf('Press "Enter" to Play Again!', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
+        love.graphics.printf('Billy Spelled "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
+        love.graphics.printf('Press "Enter" so Billy', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
+        love.graphics.printf('Can Learn More!', 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
     end 
 end
 
@@ -201,23 +219,34 @@ function love.textinput(t)
 end
 
 function love.keypressed(key)
+    if gameState == 'intro' then
+        if key == 'return' then
+            gameState = 'wordInput'
+            return -- exit function after intro screen
+        end
+    end
     if gameState == 'wordInput' then
         if key == 'return' then
-            playerWord = string.lower(wordInput)
-            --separate user input into separate characters
-            characters = {}
-            wordLength = string.len(playerWord)
-            charIndex = 1
-            for i = 1, #playerWord do
-                local letter = wordInput:sub(i, i)
-                table.insert(characters, string.lower(letter))
-            end
-            currentLevel = string.byte(characters[1]) - 96
-            gameState = 'playing'
-            loadMap(currentLevel)
+            if wordInput ~= nil and wordInput~= "" then
+                playerWord = string.lower(wordInput)
+                --separate user input into separate characters
+                characters = {}
+                wordLength = string.len(playerWord)
+                charIndex = 1
+                for i = 1, #playerWord do
+                    local letter = wordInput:sub(i, i)
+                    table.insert(characters, string.lower(letter))
+                end
+                currentLevel = string.byte(characters[1]) - 96
+                gameState = 'playing'
+                loadMap(currentLevel)
+            else
+                currentLevel = 1 -- default value if something goes wrong
+            end    
         elseif key == 'backspace' then
             wordInput = wordInput:sub(1, -2) -- allows backspaces to remove characters
         end
+
     elseif gameState == 'congratulations' then
         if key == 'return' then
             resetGame()
@@ -232,19 +261,6 @@ function love.keypressed(key)
         end
     end
 end
-
---[[
-function love.mousepressed(x, y, button)
-    if button == 1 then
-        local colliders = world:queryCircleArea(x, y, 200, {'Platform', 'Danger'})
-        if #colliders > 0 then
-            for i,c in ipairs(colliders) do
-                c:destroy()
-            end
-        end
-    end
-end
-]]
 
 function spawnPlatform(x, y, width, height)
     if width > 0 and height > 0 then
