@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="50" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="11" nextobjectid="288">
+ <editorsettings>
+  <export format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="earth" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="tileset.png" width="192" height="192"/>
+ </tileset>
+ <tileset firstgid="10" name="b" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="bSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="19" name="a" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="aSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="28" name="c" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="cSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="37" name="d" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="d1.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="46" name="e" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="e.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="55" name="brick" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="brick2.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="56" name="f" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="F.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="65" name="g" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="G.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="74" name="h" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="H.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="83" name="i" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="I.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="92" name="j" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="J.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="101" name="k" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="K.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="110" name="l" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="L.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="119" name="glass" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="Glass_Block.png" width="64" height="64"/>
+ </tileset>
+ <objectgroup id="5" name="Enemies">
+  <object id="280" x="1920" y="256" width="64" height="64"/>
+  <object id="281" x="1472" y="192" width="64" height="64"/>
+  <object id="282" x="768" y="384" width="64" height="64"/>
+ </objectgroup>
+ <objectgroup id="7" name="Warp">
+  <object id="287" x="2944" y="0" width="128" height="192"/>
+ </objectgroup>
+ <objectgroup id="4" name="Platforms">
+  <object id="283" x="0" y="448" width="896" height="192"/>
+  <object id="284" x="1152" y="256" width="384" height="128"/>
+  <object id="285" x="1856" y="320" width="704" height="192"/>
+  <object id="286" x="2816" y="192" width="384" height="576"/>
+ </objectgroup>
+ <objectgroup id="10" name="Walls"/>
+ <layer id="1" name="Tile Layer 1" width="50" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,110,111,112,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,113,114,115,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,116,117,118,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,0,0,0,0,0,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,119,119,119,119,119,119,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,119,119,119,119,119,119,
+119,119,119,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,119,119,119,119,119,119,
+119,119,119,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,
+119,119,119,119,119,119,119,119,119,119,119,119,119,119,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,119,119,119,119,119,119
+</data>
+ </layer>
+</map>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="50" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="11" nextobjectid="348">
+ <editorsettings>
+  <export target="level17.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="earth" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="tileset.png" width="192" height="192"/>
+ </tileset>
+ <tileset firstgid="10" name="b" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="bSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="19" name="a" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="aSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="28" name="c" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="cSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="37" name="d" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="d1.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="46" name="e" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="e.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="55" name="brick" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="brick2.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="56" name="f" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="F.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="65" name="g" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="G.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="74" name="h" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="H.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="83" name="i" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="I.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="92" name="j" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="J.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="101" name="k" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="K.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="110" name="l" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="L.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="119" name="glass" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="Glass_Block.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="120" name="m" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="M.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="129" name="n" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="N.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="138" name="o" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="O.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="147" name="grass" tilewidth="64" tileheight="64" tilecount="25" columns="5">
+  <image source="grass.png" width="320" height="320"/>
+ </tileset>
+ <tileset firstgid="172" name="p" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="P.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="181" name="q" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="Q.png" width="200" height="200"/>
+ </tileset>
+ <objectgroup id="5" name="Enemies"/>
+ <objectgroup id="7" name="Warp">
+  <object id="340" x="1728" y="128" width="192" height="192"/>
+ </objectgroup>
+ <objectgroup id="4" name="Platforms">
+  <object id="341" x="960" y="320" width="1024" height="256"/>
+  <object id="342" x="576" y="64" width="64" height="64"/>
+  <object id="343" x="448" y="256" width="64" height="64"/>
+  <object id="344" x="320" y="448" width="64" height="64"/>
+  <object id="345" x="128" y="640" width="192" height="64"/>
+  <object id="346" x="320" y="640" width="640" height="64"/>
+  <object id="347" x="768" y="448" width="192" height="192"/>
+ </objectgroup>
+ <objectgroup id="10" name="Walls"/>
+ <layer id="1" name="Tile Layer 1" width="50" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,181,182,183,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,184,185,186,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,187,188,189,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,55,147,147,147,147,147,147,147,147,147,147,147,147,147,147,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,55,0,0,0,0,0,0,0,0,0,55,147,147,147,147,147,147,147,147,147,147,147,147,147,147,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,55,55,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

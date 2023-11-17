@@ -58,7 +58,11 @@ function love.load()
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
     sprites.enemySheet = love.graphics.newImage('sprites/pixel_art_burger_by_artfritz_dg2krlu-fullview.png')
     sprites.background = love.graphics.newImage('sprites/background.png')
+    sprites.backgroundPlain = love.graphics.newImage('sprites/backgroundPlain.png')
     sprites.backgroundFailed = love.graphics.newImage('sprites/backgroundFailed.png')
+    sprites.winterBG = love.graphics.newImage('sprites/winterBG.png')
+    sprites.forest = love.graphics.newImage('sprites/forest.png')
+    sprites.white = love.graphics.newImage('sprites/white.png')
     sprites.heart = love.graphics.newImage('sprites/heart.png')
 
     local grid = anim8.newGrid(205, 203, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
@@ -114,7 +118,7 @@ function love.load()
     awesomeFont = love.graphics.newFont('font/Minercraftory.ttf', 20)
     awesomeFontbig = love.graphics.newFont('font/Minercraftory.ttf', 40)
     awesomeFontbigger = love.graphics.newFont('font/Minercraftory.ttf', 80)
-    awesomeFonthp = love.graphics.newFont('font/Minercraftory.ttf', 28)
+    awesomeFonthp = love.graphics.newFont('font/Minercraftory.ttf', 25)
 
 
 end
@@ -155,6 +159,7 @@ function love.update(dt)
 
         if gameState == 'wordInput' and resetGameBool == false then
             sounds.music:play()
+            lives = 3
         end
 
         if gameState == 'playing' then
@@ -164,6 +169,7 @@ function love.update(dt)
         end
  
         if gameState == 'congratulations' then
+            lives = 3
             if not finishSoundPlayed then
                 sounds.finish:play()
                 finishSoundPlayed = true
@@ -193,8 +199,21 @@ end
 
 -- LOVE.DRAW() ------------------------------------------------
 function love.draw()
+    
     if gameState == 'playing' or gameState == 'congratulations' then
         love.graphics.draw(sprites.background, 0, 0)
+        -- winterBG
+        if currentLevel == 12 or currentLevel == 13 or currentLevel == 14 or currentLevel == 18 or currentLevel == 19 then
+            love.graphics.draw(sprites.winterBG, 0, 0)
+        end
+        -- forest
+        if currentLevel == 15 or currentLevel == 16 or currentLevel == 20 or currentLevel == 25 then
+            love.graphics.draw(sprites.forest, 0, 0)
+        end
+        -- white
+        if currentLevel == 8 or currentLevel == 21 or currentLevel == 22 or currentLevel == 24 or currentLevel == 26 then
+            love.graphics.draw(sprites.white, 0, 0)
+        end
     end
 
     if gameState == 'intro' then
@@ -203,6 +222,7 @@ function love.draw()
         love.graphics.printf("intro screen", 0, love.graphics.getHeight()/2 - 50, textWidth, 'center') 
     end
     if gameState == 'wordInput' then
+        love.graphics.draw(sprites.backgroundPlain, 0, 0)
         love.graphics.setFont(awesomeFont)
         local textWidth = love.graphics.getWidth() 
         love.graphics.printf("Billy can't read because", 0, love.graphics.getHeight()/2 - 180, textWidth, 'center') 
@@ -212,8 +232,9 @@ function love.draw()
         love.graphics.printf("Enter a word for Billy to learn...", 0, love.graphics.getHeight()/2, textWidth, 'center') 
 
         love.graphics.setFont(awesomeFontbig)
-        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 60, textWidth, 'center')
-       
+        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
+        player.animation:draw(sprites.playerSheet, 500, 550, nil, .5*player.direction, .5, 100, 90)
+
     
     elseif gameState == 'playing' then
         love.graphics.setFont(testFont)
@@ -235,7 +256,7 @@ function love.draw()
                 currentWord = currentWord .. characters[i]
             end
             love.graphics.setFont(awesomeFontbigger)
-            love.graphics.printf(string.upper(currentWord), 10, 60, textWidth, 'center')     
+            love.graphics.printf(string.upper(currentWord), 38, 70, textWidth, 'left')     
         end
     
         cam:attach()
@@ -270,13 +291,13 @@ function love.draw()
     if gameState == 'playing' then
         local textWidth = love.graphics.getWidth() 
         love.graphics.setFont(awesomeFonthp) 
-        love.graphics.printf('HP', 22, 20, textWidth, 'left')
-        love.graphics.draw(sprites.heart, 70, 25, nil, .045, nil)
+        love.graphics.printf('HP', 40, 41, textWidth, 'left')
+        love.graphics.draw(sprites.heart, 88, 45, nil, .045, nil)
         if lives == 2 or lives == 3 then
-            love.graphics.draw(sprites.heart, 105, 25, nil, .045, nil)
+            love.graphics.draw(sprites.heart, 123, 45, nil, .045, nil)
         end
         if lives == 3 then
-            love.graphics.draw(sprites.heart, 140, 25, nil, .045, nil)
+            love.graphics.draw(sprites.heart, 158, 45, nil, .045, nil)
         end
     end
 

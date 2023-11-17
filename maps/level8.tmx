@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="50" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="11" nextobjectid="248">
+ <editorsettings>
+  <export target="level8.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="earth" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="tileset.png" width="192" height="192"/>
+ </tileset>
+ <tileset firstgid="10" name="b" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="bSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="19" name="a" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="aSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="28" name="c" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="cSheet.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="37" name="d" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="d1.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="46" name="e" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="e.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="55" name="brick" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="brick2.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="56" name="f" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="F.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="65" name="g" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="G.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="74" name="h" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="H.png" width="200" height="200"/>
+ </tileset>
+ <tileset firstgid="83" name="duck" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="duck.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="84" name="x" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+  <image source="X.png" width="200" height="200"/>
+ </tileset>
+ <objectgroup id="5" name="Enemies">
+  <object id="219" x="576" y="256" width="64" height="64"/>
+  <object id="220" x="1984" y="640" width="64" height="64"/>
+ </objectgroup>
+ <objectgroup id="7" name="Warp">
+  <object id="221" x="2624" y="512" width="128" height="192"/>
+ </objectgroup>
+ <objectgroup id="4" name="Platforms">
+  <object id="225" x="0" y="704" width="3200" height="64"/>
+  <object id="226" x="0" y="0" width="64" height="704"/>
+  <object id="227" x="64" y="512" width="384" height="64"/>
+  <object id="228" x="64" y="256" width="64" height="64"/>
+  <object id="230" x="192" y="0" width="2624" height="64"/>
+  <object id="232" x="2432" y="448" width="384" height="64"/>
+  <object id="233" x="2816" y="0" width="64" height="512"/>
+  <object id="236" x="2112" y="448" width="64" height="64"/>
+  <object id="237" x="1856" y="64" width="64" height="512"/>
+  <object id="238" x="1664" y="512" width="192" height="64"/>
+  <object id="239" x="896" y="256" width="768" height="64"/>
+  <object id="240" x="1280" y="320" width="64" height="320"/>
+  <object id="241" x="640" y="512" width="448" height="64"/>
+  <object id="242" x="384" y="320" width="320" height="64"/>
+  <object id="243" x="640" y="384" width="64" height="128"/>
+  <object id="244" x="384" y="64" width="64" height="256"/>
+  <object id="245" x="2176" y="256" width="64" height="384"/>
+  <object id="246" x="2240" y="256" width="384" height="64"/>
+  <object id="247" x="3072" y="0" width="128" height="704"/>
+ </objectgroup>
+ <objectgroup id="10" name="Walls">
+  <object id="222" x="384" y="256" width="64" height="64"/>
+  <object id="223" x="1280" y="640" width="64" height="64"/>
+  <object id="224" x="2176" y="640" width="64" height="64"/>
+ </objectgroup>
+ <layer id="1" name="Tile Layer 1" width="50" height="12">
+  <data encoding="csv">
+83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,
+83,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,83,83,83,83,83,
+83,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,83,83,83,83,83,
+83,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,83,83,83,83,83,
+83,83,0,0,0,0,83,0,0,0,0,0,0,0,83,83,83,83,83,83,83,83,83,83,83,83,0,0,0,83,0,0,0,0,83,83,83,83,83,83,83,0,0,0,83,83,83,83,83,83,
+83,0,0,0,0,0,83,83,83,83,83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,83,0,0,0,0,83,0,0,0,0,0,0,0,0,0,83,83,83,83,83,83,
+83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,83,0,0,0,0,83,0,0,0,0,0,0,0,0,0,83,83,83,83,83,83,
+83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,83,0,0,0,83,83,0,0,0,83,83,83,83,83,83,83,83,83,83,83,83,
+83,83,83,83,83,83,83,0,0,0,83,83,83,83,83,83,83,0,0,0,83,0,0,0,0,0,83,83,83,83,0,0,0,0,83,0,0,0,0,0,0,74,75,76,83,83,83,83,83,83,
+83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,77,78,79,83,83,83,83,83,83,
+83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,83,0,0,0,0,0,0,80,81,82,83,83,83,83,83,83,
+83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83,83
+</data>
+ </layer>
+</map>
