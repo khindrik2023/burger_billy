@@ -20,7 +20,7 @@ function love.load()
     cameraFile = require 'libraries/hump/camera'
     -- dictionary for checking validity of user input
     dictionaryFromFile = {}
-    for line in love.filesystem.lines("libraries/dictionary/popular.txt") do
+    for line in love.filesystem.lines("libraries/dictionary/enable1.txt") do
         table.insert(dictionaryFromFile, line)
     end
 
@@ -31,9 +31,15 @@ function love.load()
     sounds.jump = love.audio.newSource("audio/Alberto Sueri - 8 Bit Fun - Classic Jump Glide Up Bleep.wav", 'static')
     sounds.jump:setVolume(.5)
     sounds.warp = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Power up Trophy .wav", 'static')
+    sounds.beep = love.audio.newSource("audio/Gamemaster Audio - Videogame Powerups - Collect Coin 8 bit.wav", 'static')
+    sounds.beep:setVolume(.6)
+    sounds.newlife = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Reward Trophy.wav", 'static')
+    sounds.newlife:setVolume(.8)
+    sounds.dead = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Downwards Fall Loose.wav", 'static')
+    sounds.dead:setVolume(9)
     sounds.music = love.audio.newSource("audio/Kashido - Swan Lake Theme.wav", 'stream')
     sounds.endMusic = love.audio.newSource('audio/T. Bless - Froggy Fraud Adventure.wav', 'stream')
-    sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
+    --sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
     sounds.finish = love.audio.newSource('audio/Sound Response - 8 Bit Jingles - Glide up Win.wav', 'static')
     finishSoundPlayed = false
     sounds.music:setLooping(true)
@@ -67,8 +73,9 @@ function love.load()
     require('player')   
     require('enemy') 
 
-    -- dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = 'Danger'})
-    -- dangerZone:setType('static')
+    -- if player falls, reset
+    dangerZone = world:newRectangleCollider(-500, 800, 5000, 50, {collision_class = 'Danger'})
+    dangerZone:setType('static')
 
     platforms = {}
     walls = {}
@@ -216,7 +223,7 @@ function love.draw()
         love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
         love.graphics.printf('Billy learned how to spell "' .. string.upper(playerWord) .. '"', 20, love.graphics.getHeight()/2 - 40, textWidth, 'center')
         love.graphics.printf('Press "Enter" to', 0, love.graphics.getHeight()/2, textWidth, 'center')
-        love.graphics.printf('teach him some more!', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
+        love.graphics.printf('learn more words!', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
         player.animation:draw(sprites.playerSheet, 500, 600, nil, .5*player.direction, .5, 100, 90)
     end 
 end
@@ -244,6 +251,7 @@ function love.keypressed(key)
     if gameState == 'intro' then
         if key == 'return' then
             gameState = 'wordInput'
+            sounds.beep:play()
             return -- exit function after intro screen
         end
     end
@@ -264,6 +272,7 @@ function love.keypressed(key)
 
                     currentLevel = string.byte(characters[1]) - 96
                     gameState = 'playing'
+                    sounds.newlife:play()
                     loadMap(currentLevel)
                 end
             else
@@ -343,7 +352,7 @@ end
 function loadMap(currentLevel)
     mapName = "level" .. currentLevel
     destroyAll()
-    player:setPosition(150, 100)
+    player:setPosition(playerStartX, playerStartY)
     
     gameMap = sti("maps/" .. mapName .. ".lua")
 
