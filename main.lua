@@ -14,9 +14,15 @@ function love.load()
     isBlinking = true
     blinkInterval = 0.5
 
+    -- libraries
     anim8 = require 'libraries/anim8/anim8'
     sti = require 'libraries/Simple-Tiled-Implementation/sti'
     cameraFile = require 'libraries/hump/camera'
+    -- dictionary for checking validity of user input
+    dictionaryFromFile = {}
+    for line in love.filesystem.lines("libraries/dictionary/popular.txt") do
+        table.insert(dictionaryFromFile, line)
+    end
 
     cam = cameraFile()
 
@@ -61,8 +67,8 @@ function love.load()
     require('player')   
     require('enemy') 
 
-    --dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = 'Danger'})
-    --dangerZone:setType('static')
+    -- dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = 'Danger'})
+    -- dangerZone:setType('static')
 
     platforms = {}
     walls = {}
@@ -89,9 +95,9 @@ function love.load()
     loadMap(currentLevel)
 
     testFont = love.graphics.newFont(20)
-    awesomeFont = love.graphics.newFont('font/8bit16.ttf', 30)
-    awesomeFontbig = love.graphics.newFont('font/8bit16.ttf', 60)
-    awesomeFontbigger = love.graphics.newFont('font/8bit16.ttf', 100)
+    awesomeFont = love.graphics.newFont('font/Minercraftory.ttf', 20)
+    awesomeFontbig = love.graphics.newFont('font/Minercraftory.ttf', 40)
+    awesomeFontbigger = love.graphics.newFont('font/I-pixel-u.ttf', 80)
 
 
 end
@@ -135,7 +141,8 @@ function love.update(dt)
             if not finishSoundPlayed then
                 sounds.finish:play()
                 finishSoundPlayed = true
-            end
+            end       
+            player.animation = animations.idle
             sounds.music:stop()
             sounds.endMusic:play()
         end
@@ -166,10 +173,10 @@ function love.draw()
         love.graphics.printf("he's too busy eating burgers.", 0, love.graphics.getHeight()/2 - 145, textWidth, 'center') 
         love.graphics.printf("Help Billy stop eating", 0, love.graphics.getHeight()/2 - 110, textWidth, 'center') 
         love.graphics.printf("and start reading!", 0, love.graphics.getHeight()/2 - 75, textWidth, 'center') 
-        love.graphics.printf("Enter Word:", 0, love.graphics.getHeight()/2, textWidth, 'center') 
-        
+        love.graphics.printf("Enter a word for Billy to learn...", 0, love.graphics.getHeight()/2, textWidth, 'center') 
+
         love.graphics.setFont(awesomeFontbig)
-        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 50, textWidth, 'center')
+        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
         
     elseif gameState == 'playing' then
         love.graphics.setFont(testFont)
@@ -189,7 +196,7 @@ function love.draw()
                 currentWord = currentWord .. characters[i]
             end
             love.graphics.setFont(awesomeFontbigger)
-            love.graphics.printf(currentWord, 10, 90, textWidth, 'center')     
+            love.graphics.printf(string.upper(currentWord), 10, 60, textWidth, 'center')     
         end
     
         cam:attach()
@@ -203,18 +210,31 @@ function love.draw()
         local textWidth = love.graphics.getWidth()  
         if isBlinking then
             love.graphics.setFont(awesomeFontbigger)
-            love.graphics.printf(playerWord, 10, 130, textWidth, 'center')     
+            love.graphics.printf(string.upper(playerWord), 0, 110, textWidth, 'center')     
         end
         love.graphics.setFont(awesomeFont)
         love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
-        love.graphics.printf('Billy Learned How to Spell "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
-        love.graphics.printf('Press "Enter"', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
-        love.graphics.printf('To Teach Him More!', 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
+        love.graphics.printf('Billy learned how to spell "' .. string.upper(playerWord) .. '"', 20, love.graphics.getHeight()/2 - 40, textWidth, 'center')
+        love.graphics.printf('Press "Enter" to', 0, love.graphics.getHeight()/2, textWidth, 'center')
+        love.graphics.printf('teach him some more!', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
+        player.animation:draw(sprites.playerSheet, 500, 600, nil, .5*player.direction, .5, 100, 90)
     end 
 end
 
+
+
 -- OTHER FUNCTIONS -----------------------------------------
-function love.textinput(t)
+
+function isWordValid(word) -- uses a dictionary to check validity of user input
+    for _, dictWord in ipairs(dictionaryFromFile) do
+        if word == dictWord then
+            return true
+        end
+    end
+    return false
+end
+
+function love.textinput(t) -- manages text input when user types word
     if gameState == 'wordInput' then
         wordInput = wordInput .. t
     end
@@ -231,17 +251,21 @@ function love.keypressed(key)
         if key == 'return' then
             if wordInput ~= nil and wordInput~= "" then
                 playerWord = string.lower(wordInput)
-                --separate user input into separate characters
-                characters = {}
-                wordLength = string.len(playerWord)
-                charIndex = 1
-                for i = 1, #playerWord do
-                    local letter = wordInput:sub(i, i)
-                    table.insert(characters, string.lower(letter))
+
+                if isWordValid(playerWord) then
+                    --separate user input into separate characters
+                    characters = {}
+                    wordLength = string.len(playerWord)
+                    charIndex = 1
+                    for i = 1, #playerWord do
+                        local letter = wordInput:sub(i, i)
+                        table.insert(characters, string.lower(letter))
+                    end
+
+                    currentLevel = string.byte(characters[1]) - 96
+                    gameState = 'playing'
+                    loadMap(currentLevel)
                 end
-                currentLevel = string.byte(characters[1]) - 96
-                gameState = 'playing'
-                loadMap(currentLevel)
             else
                 currentLevel = 1 -- default value if something goes wrong
             end    
