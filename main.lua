@@ -2,6 +2,8 @@
 -- LOVE.LOAD() --------------------------------------------------
 function love.load()
     love.window.setMode(1000, 768)
+
+    -- variables
     gameState = 'intro'
     wordInput = '' -- user input for word that they want to spell
     playerWord = '' -- stores wordInput
@@ -9,10 +11,11 @@ function love.load()
     wordLength = 0
     charIndex = 0
     currentLevel = 1
-    previousLevel = 1
+    lives = 3
     blinkTimer = 0
     isBlinking = true
     blinkInterval = 0.5
+    resetGameBool = false
 
     -- libraries
     anim8 = require 'libraries/anim8/anim8'
@@ -34,23 +37,29 @@ function love.load()
     sounds.beep = love.audio.newSource("audio/Gamemaster Audio - Videogame Powerups - Collect Coin 8 bit.wav", 'static')
     sounds.beep:setVolume(.6)
     sounds.newlife = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Reward Trophy.wav", 'static')
-    sounds.newlife:setVolume(.8)
+    sounds.newlife:setVolume(.7)
     sounds.dead = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Downwards Fall Loose.wav", 'static')
-    sounds.dead:setVolume(9)
+    sounds.dead:setVolume(6)
+    sounds.failed = love.audio.newSource("audio/Sound Response - 8 Bit Jingles - Slide down Lost Experience .wav", 'static')
+    sounds.failed:setVolume(2)
     sounds.music = love.audio.newSource("audio/Kashido - Swan Lake Theme.wav", 'stream')
+    sounds.music:setLooping(true)
+    sounds.music:setVolume(0.6)
+    sounds.music:play()
     sounds.endMusic = love.audio.newSource('audio/T. Bless - Froggy Fraud Adventure.wav', 'stream')
     --sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
     sounds.finish = love.audio.newSource('audio/Sound Response - 8 Bit Jingles - Glide up Win.wav', 'static')
     finishSoundPlayed = false
-    sounds.music:setLooping(true)
-    sounds.music:setVolume(0.5)
-    sounds.music:play()
-    
+    sounds.failedMusic = love.audio.newSource('audio/Kashido - Minuet in G Major.wav', 'stream')
+    sounds.failedMusic:setVolume(0.9)
+
 
     sprites = {}
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
     sprites.enemySheet = love.graphics.newImage('sprites/pixel_art_burger_by_artfritz_dg2krlu-fullview.png')
     sprites.background = love.graphics.newImage('sprites/background.png')
+    sprites.backgroundFailed = love.graphics.newImage('sprites/backgroundFailed.png')
+    sprites.heart = love.graphics.newImage('sprites/heart.png')
 
     local grid = anim8.newGrid(205, 203, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
     local enemyGrid = anim8.newGrid(492, 494, 492, 494)
@@ -104,7 +113,8 @@ function love.load()
     testFont = love.graphics.newFont(20)
     awesomeFont = love.graphics.newFont('font/Minercraftory.ttf', 20)
     awesomeFontbig = love.graphics.newFont('font/Minercraftory.ttf', 40)
-    awesomeFontbigger = love.graphics.newFont('font/I-pixel-u.ttf', 80)
+    awesomeFontbigger = love.graphics.newFont('font/Minercraftory.ttf', 80)
+    awesomeFonthp = love.graphics.newFont('font/Minercraftory.ttf', 28)
 
 
 end
@@ -127,10 +137,14 @@ function love.update(dt)
             charIndex = 1
         end
 
+        -- checks if user gets damaged 3 times
+        if lives <= 0 then
+            gameState = 'failed'
+        end
+
         -- query used to check for warpzones to advance to next level 
         local colliders = world:queryRectangleArea(warpX, warpY, 200, 200, {'Player'})
         if #colliders > 0 then
-            previousLevel = currentLevel
             charIndex = charIndex + 1
             if charIndex < wordLength + 1 then
                 currentLevel = string.byte(characters[charIndex]) - 96
@@ -139,9 +153,14 @@ function love.update(dt)
             end
         end
 
-        if gameState == 'wordInput' or gameState == 'playing' then
+        if gameState == 'wordInput' and resetGameBool == false then
+            sounds.music:play()
+        end
+
+        if gameState == 'playing' then
             sounds.endMusic:stop()
-            sounds.endMusic:play()
+            sounds.failedMusic:stop()
+            sounds.music:play()
         end
  
         if gameState == 'congratulations' then
@@ -149,10 +168,20 @@ function love.update(dt)
                 sounds.finish:play()
                 finishSoundPlayed = true
             end       
-            player.animation = animations.idle
+            player.animation = animations.jump
             sounds.music:stop()
             sounds.endMusic:play()
         end
+
+        if gameState == 'failed' then
+            if not failedSoundPlayed then
+                sounds.failed:play()
+                failedSoundPlayed = true
+            end       
+            sounds.music:stop() 
+            sounds.failedMusic:play() 
+        end
+
     end
 
     blinkTimer = blinkTimer + dt
@@ -183,18 +212,21 @@ function love.draw()
         love.graphics.printf("Enter a word for Billy to learn...", 0, love.graphics.getHeight()/2, textWidth, 'center') 
 
         love.graphics.setFont(awesomeFontbig)
-        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
-        
+        love.graphics.printf(wordInput, 0, love.graphics.getHeight()/2 + 60, textWidth, 'center')
+       
+    
     elseif gameState == 'playing' then
         love.graphics.setFont(testFont)
         local textWidth = love.graphics.getWidth()  
-        love.graphics.printf("word: " .. playerWord, 10, 20, textWidth, 'left')
-        love.graphics.printf("length: " .. wordLength, 10, 40, textWidth, 'left')
-        love.graphics.printf("charIndex: " .. charIndex, 10, 60, textWidth, 'left')
+        --love.graphics.printf("word: " .. playerWord, 10, 20, textWidth, 'left')
+        --love.graphics.printf("length: " .. wordLength, 10, 40, textWidth, 'left')
+        --love.graphics.printf("charIndex: " .. charIndex, 10, 60, textWidth, 'left')
         if charIndex < wordLength + 1 then
-            love.graphics.printf("characters: " .. characters[charIndex], 10, 80, textWidth, 'left')
-            love.graphics.printf("ASCII: " .. string.byte(characters[charIndex])-96, 10, 100, textWidth, 'left')
+            --love.graphics.printf("character: " .. characters[charIndex], 10, 80, textWidth, 'left')
+            --love.graphics.printf("ASCII: " .. string.byte(characters[charIndex])-96, 10, 100, textWidth, 'left')
+            --love.graphics.printf("lives: " .. lives, 10, 120, textWidth, 'left')
         end
+
 
         -- this prints the current spelled letters on screen so user can keep track of the word
         if charIndex >= 2 and charIndex <= #characters then
@@ -222,10 +254,32 @@ function love.draw()
         love.graphics.setFont(awesomeFont)
         love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
         love.graphics.printf('Billy learned how to spell "' .. string.upper(playerWord) .. '"', 20, love.graphics.getHeight()/2 - 40, textWidth, 'center')
-        love.graphics.printf('Press "Enter" to', 0, love.graphics.getHeight()/2, textWidth, 'center')
-        love.graphics.printf('learn more words!', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
-        player.animation:draw(sprites.playerSheet, 500, 600, nil, .5*player.direction, .5, 100, 90)
+        love.graphics.printf('Press "ENTER" to learn more words!', 0, love.graphics.getHeight()/2, textWidth, 'center')
+        player.animation:draw(sprites.playerSheet, 500, 550, nil, .5*player.direction, .5, 100, 90)
+    
+    elseif gameState == 'failed' then
+        local textWidth = love.graphics.getWidth()  
+        love.graphics.draw(sprites.backgroundFailed, 0, 0)
+        love.graphics.setFont(awesomeFont)
+        love.graphics.printf('Billy ate too many burgers and fell asleep!', 0, love.graphics.getHeight()/2 - 50, textWidth, 'center')
+        love.graphics.printf('Please try again.', 0, love.graphics.getHeight()/2 - 10, textWidth, 'center')
+        love.graphics.printf('Press "ENTER"', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
     end 
+
+    -- prints hearts to screen representing player lives
+    if gameState == 'playing' then
+        local textWidth = love.graphics.getWidth() 
+        love.graphics.setFont(awesomeFonthp) 
+        love.graphics.printf('HP', 22, 20, textWidth, 'left')
+        love.graphics.draw(sprites.heart, 70, 25, nil, .045, nil)
+        if lives == 2 or lives == 3 then
+            love.graphics.draw(sprites.heart, 105, 25, nil, .045, nil)
+        end
+        if lives == 3 then
+            love.graphics.draw(sprites.heart, 140, 25, nil, .045, nil)
+        end
+    end
+
 end
 
 
@@ -255,6 +309,7 @@ function love.keypressed(key)
             return -- exit function after intro screen
         end
     end
+
     if gameState == 'wordInput' then
         if key == 'return' then
             if wordInput ~= nil and wordInput~= "" then
@@ -282,8 +337,9 @@ function love.keypressed(key)
             wordInput = wordInput:sub(1, -2) -- allows backspaces to remove characters
         end
 
-    elseif gameState == 'congratulations' then
+    elseif gameState == 'congratulations' or gameState == 'failed' then
         if key == 'return' then
+            sounds.beep:play()
             resetGame()
         end
     else
@@ -379,14 +435,17 @@ function resetGame()
     characters = {}
     wordLength = 0
     charIndex = 0
+    lives = 3
     finishSoundPlayed = false
+    failedSoundPlayed = false
+    resetGameBool = true
 
     player:setPosition(150, 100)
 
     destroyAll()
     loadMap(1) 
 
-    sounds.endMusic:stop()
-    sounds.music:play()
+    --sounds.endMusic:stop()
+    --sounds.music:play()
 end
 

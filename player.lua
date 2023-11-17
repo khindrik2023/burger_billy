@@ -37,6 +37,7 @@ function playerUpdate(dt)
         if player:enter('Danger') then
             player:setPosition(playerStartX, playerStartY)
             sounds.dead:play()
+            lives = lives - 1
         end
     end
 
