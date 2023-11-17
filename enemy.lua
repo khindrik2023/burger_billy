@@ -13,8 +13,16 @@ function updateEnemies(dt)
         e.animation:update(dt)
         local ex, ey = e:getPosition()
 
-        local colliders = world:queryRectangleArea(ex + (40 * e.direction), ey + 20, 20, 20, {'Platform'})
-        if #colliders == 0 then
+        local platformColliders = world:queryRectangleArea(ex + (40 * e.direction), ey + 20, 20, 20, {'Platform'})
+        local wallColliders = world:queryRectangleArea(ex + (30 * e.direction), ey + 20, 20, 20, {'Wall'})
+
+        local hasWallCollisions = false
+        for _, collider in ipairs(wallColliders) do
+            hasWallCollisions = true
+            break
+        end
+
+        if #platformColliders == 0 or hasWallCollisions then
             e.direction = e.direction * -1
         end
 
@@ -28,5 +36,3 @@ function drawEnemies()
         e.animation:draw(sprites.enemySheet, ex, ey, nil, .15, nil, 250, 240)
     end
 end
-
-

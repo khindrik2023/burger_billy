@@ -54,6 +54,7 @@ function love.load()
     world:setQueryDebugDrawing(true)
 
     world:addCollisionClass('Platform')
+    world:addCollisionClass('Wall')
     world:addCollisionClass('Player')
     world:addCollisionClass('Danger')
 
@@ -64,6 +65,7 @@ function love.load()
     --dangerZone:setType('static')
 
     platforms = {}
+    walls = {}
 
     -- these tracks the location of warpzone objects
     warpX = 0
@@ -192,7 +194,7 @@ function love.draw()
     
         cam:attach()
             gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-            --world:draw()
+            world:draw()
             drawPlayer()
             drawEnemies()
         cam:detach()
@@ -205,9 +207,9 @@ function love.draw()
         end
         love.graphics.setFont(awesomeFont)
         love.graphics.printf("Congratulations!", 0, love.graphics.getHeight()/2 - 80, textWidth, 'center')
-        love.graphics.printf('Billy Spelled "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
-        love.graphics.printf('Press "Enter" so Billy', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
-        love.graphics.printf('Can Learn More!', 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
+        love.graphics.printf('Billy Learned How to Spell "' .. playerWord .. '"', 0, love.graphics.getHeight()/2 - 30, textWidth, 'center')
+        love.graphics.printf('Press "Enter"', 0, love.graphics.getHeight()/2 + 20, textWidth, 'center')
+        love.graphics.printf('To Teach Him More!', 0, love.graphics.getHeight()/2 + 55, textWidth, 'center')
     end 
 end
 
@@ -270,6 +272,14 @@ function spawnPlatform(x, y, width, height)
     end
 end
 
+function spawnWall(x, y, width, height)
+    if width > 0 and height > 0 then
+        local wall = world:newRectangleCollider(x, y, width, height, {collision_class = 'Wall'})
+        wall:setType('static')
+        table.insert(walls, wall)
+    end
+end
+
 function destroyAll()
     local i = #platforms
     while i > -1 do
@@ -277,6 +287,15 @@ function destroyAll()
             platforms[i]:destroy()
        end
        table.remove(platforms, i)
+       i = i - 1
+    end
+
+    local i = #walls
+    while i > -1 do
+       if walls[i] ~= nil then
+            walls[i]:destroy()
+       end
+       table.remove(walls, i)
        i = i - 1
     end
 
@@ -307,6 +326,9 @@ function loadMap(currentLevel)
     for i, obj in pairs(gameMap.layers["Platforms"].objects) do
         spawnPlatform(obj.x, obj.y, obj.width, obj.height)
     end
+    for i, obj in pairs(gameMap.layers["Walls"].objects) do
+        spawnWall(obj.x, obj.y, obj.width, obj.height)
+    end  
     for i, obj in pairs(gameMap.layers["Enemies"].objects) do
         spawnEnemy(obj.x, obj.y)
     end
