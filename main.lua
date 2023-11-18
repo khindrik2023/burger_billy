@@ -22,7 +22,7 @@ function love.load()
     anim8 = require 'libraries/anim8/anim8'
     sti = require 'libraries/Simple-Tiled-Implementation/sti'
     cameraFile = require 'libraries/hump/camera'
-    
+
     -- dictionary for checking validity of user input
     dictionaryFromFile = {}
     for line in love.filesystem.lines("libraries/dictionary/enable1.txt") do
@@ -49,7 +49,6 @@ function love.load()
     sounds.music:setVolume(0.6)
     sounds.music:play()
     sounds.endMusic = love.audio.newSource('audio/T. Bless - Froggy Fraud Adventure.wav', 'stream')
-    --sounds.die = love.audio.newSource("audio/Sound Response - 8 Bit Retro - Arcade Blip.wav", 'static')
     sounds.finish = love.audio.newSource('audio/Sound Response - 8 Bit Jingles - Glide up Win.wav', 'static')
     finishSoundPlayed = false
     sounds.failedMusic = love.audio.newSource('audio/Kashido - Minuet in G Major.wav', 'stream')
