@@ -10,7 +10,7 @@ return {
   tilewidth = 64,
   tileheight = 64,
   nextlayerid = 11,
-  nextobjectid = 404,
+  nextobjectid = 405,
   properties = {},
   tilesets = {
     {
@@ -927,19 +927,6 @@ return {
           properties = {}
         },
         {
-          id = 401,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 384,
-          y = 256,
-          width = 1216,
-          height = 64,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 402,
           name = "",
           type = "",
@@ -947,6 +934,19 @@ return {
           x = 320,
           y = 448,
           width = 1536,
+          height = 64,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 404,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 448,
+          y = 256,
+          width = 1152,
           height = 64,
           rotation = 0,
           visible = true,

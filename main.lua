@@ -4,7 +4,7 @@ function love.load()
     love.window.setMode(1000, 768)
 
     -- variables
-    gameState = 'intro'
+    gameState = 'titlescreen'
     wordInput = '' -- user input for word that they want to spell
     playerWord = '' -- stores wordInput
     characters = {} -- stores individual characters of wordInput
@@ -16,6 +16,7 @@ function love.load()
     isBlinking = true
     blinkInterval = 0.5
     resetGameBool = false
+    congratsBGbool = false
 
     -- libraries
     anim8 = require 'libraries/anim8/anim8'
@@ -57,6 +58,7 @@ function love.load()
     sprites = {}
     sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
     sprites.enemySheet = love.graphics.newImage('sprites/pixel_art_burger_by_artfritz_dg2krlu-fullview.png')
+    sprites.titlescreen = love.graphics.newImage('sprites/titlescreen.png')
     sprites.background = love.graphics.newImage('sprites/background.png')
     sprites.backgroundPlain = love.graphics.newImage('sprites/backgroundPlain.png')
     sprites.backgroundFailed = love.graphics.newImage('sprites/backgroundFailed.png')
@@ -96,8 +98,6 @@ function love.load()
     -- these tracks the location of warpzone objects
     warpX = 0
     warpY = 0
-    backX = 0
-    backY = 0
 
     -- keeps track of levels and load initial level
     -- "currentLevel" is updated in love.update()
@@ -170,6 +170,7 @@ function love.update(dt)
  
         if gameState == 'congratulations' then
             lives = 3
+            congratsBGbool = true
             if not finishSoundPlayed then
                 sounds.finish:play()
                 finishSoundPlayed = true
@@ -199,30 +200,17 @@ end
 
 -- LOVE.DRAW() ------------------------------------------------
 function love.draw()
-    
-    if gameState == 'playing' or gameState == 'congratulations' then
-        love.graphics.draw(sprites.background, 0, 0)
-        -- winterBG
-        if currentLevel == 12 or currentLevel == 13 or currentLevel == 14 or currentLevel == 18 or currentLevel == 19 then
-            love.graphics.draw(sprites.winterBG, 0, 0)
-        end
-        -- forest
-        if currentLevel == 15 or currentLevel == 16 or currentLevel == 20 or currentLevel == 25 then
-            love.graphics.draw(sprites.forest, 0, 0)
-        end
-        -- white
-        if currentLevel == 8 or currentLevel == 21 or currentLevel == 22 or currentLevel == 24 or currentLevel == 26 then
-            love.graphics.draw(sprites.white, 0, 0)
+    if gameState == 'titlescreen' then
+        love.graphics.draw(sprites.titlescreen, 0, 0)
+        love.graphics.setFont(awesomeFont)
+        local textWidth = love.graphics.getWidth() 
+        if isBlinking then
+            love.graphics.printf('Press "ENTER"', 0, 660, textWidth, 'center') 
         end
     end
 
-    if gameState == 'intro' then
-        love.graphics.setFont(testFont)
-        local textWidth = love.graphics.getWidth() 
-        love.graphics.printf("intro screen", 0, love.graphics.getHeight()/2 - 50, textWidth, 'center') 
-    end
     if gameState == 'wordInput' then
-        love.graphics.draw(sprites.backgroundPlain, 0, 0)
+        love.graphics.draw(sprites.background, 0, 0)
         love.graphics.setFont(awesomeFont)
         local textWidth = love.graphics.getWidth() 
         love.graphics.printf("Billy can't read because", 0, love.graphics.getHeight()/2 - 180, textWidth, 'center') 
@@ -237,17 +225,27 @@ function love.draw()
 
     
     elseif gameState == 'playing' then
-        love.graphics.setFont(testFont)
-        local textWidth = love.graphics.getWidth()  
-        --love.graphics.printf("word: " .. playerWord, 10, 20, textWidth, 'left')
-        --love.graphics.printf("length: " .. wordLength, 10, 40, textWidth, 'left')
-        --love.graphics.printf("charIndex: " .. charIndex, 10, 60, textWidth, 'left')
-        if charIndex < wordLength + 1 then
-            --love.graphics.printf("character: " .. characters[charIndex], 10, 80, textWidth, 'left')
-            --love.graphics.printf("ASCII: " .. string.byte(characters[charIndex])-96, 10, 100, textWidth, 'left')
-            --love.graphics.printf("lives: " .. lives, 10, 120, textWidth, 'left')
+        love.graphics.draw(sprites.background, 0, 0)
+        -- winterBG
+        if currentLevel == 12 or currentLevel == 13 or currentLevel == 14 or currentLevel == 18 or currentLevel == 19 then
+            love.graphics.draw(sprites.winterBG, 0, 0)
         end
+        -- forest
+        if currentLevel == 4 or currentLevel == 15 or currentLevel == 16 or currentLevel == 20 or currentLevel == 25 then
+            love.graphics.draw(sprites.forest, 0, 0)
+        end
+        -- white
+        if currentLevel == 2 or currentLevel == 8 or currentLevel == 21 or currentLevel == 22 or currentLevel == 24 or currentLevel == 26 then
+            love.graphics.draw(sprites.white, 0, 0)
+        end
+    
+        cam:attach()
+            gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
+            drawPlayer()
+            drawEnemies()
+            --world:draw() -- prints all objects to screen for debugging
 
+        cam:detach()
 
         -- this prints the current spelled letters on screen so user can keep track of the word
         if charIndex >= 2 and charIndex <= #characters then
@@ -256,17 +254,38 @@ function love.draw()
                 currentWord = currentWord .. characters[i]
             end
             love.graphics.setFont(awesomeFontbigger)
+            local textWidth = love.graphics.getWidth() 
             love.graphics.printf(string.upper(currentWord), 38, 70, textWidth, 'left')     
         end
-    
-        cam:attach()
-            gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-            world:draw()
-            drawPlayer()
-            drawEnemies()
-        cam:detach()
 
-    elseif gameState == 'congratulations' then    
+        -- prints health meter
+        local textWidth = love.graphics.getWidth() 
+        love.graphics.setFont(awesomeFonthp) 
+        love.graphics.printf('HP', 40, 41, textWidth, 'left')
+        love.graphics.draw(sprites.heart, 88, 45, nil, .045, nil)
+        if lives == 2 or lives == 3 then
+            love.graphics.draw(sprites.heart, 123, 45, nil, .045, nil)
+        end
+        if lives == 3 then
+            love.graphics.draw(sprites.heart, 158, 45, nil, .045, nil)
+        end
+
+        -- check prints for debugging
+        --[[
+        love.graphics.setFont(testFont)
+        local textWidth = love.graphics.getWidth()  
+        love.graphics.printf("word: " .. playerWord, 10, 20, textWidth, 'left')
+        love.graphics.printf("length: " .. wordLength, 10, 40, textWidth, 'left')
+        love.graphics.printf("charIndex: " .. charIndex, 10, 60, textWidth, 'left')
+        if charIndex < wordLength + 1 then
+            love.graphics.printf("character: " .. characters[charIndex], 10, 80, textWidth, 'left')
+            love.graphics.printf("ASCII: " .. string.byte(characters[charIndex])-96, 10, 100, textWidth, 'left')
+            love.graphics.printf("lives: " .. lives, 10, 120, textWidth, 'left')
+        end
+        ]]
+
+    elseif gameState == 'congratulations' then 
+        love.graphics.draw(sprites.background, 0, 0)   
         local textWidth = love.graphics.getWidth()  
         if isBlinking then
             love.graphics.setFont(awesomeFontbigger)
@@ -279,30 +298,14 @@ function love.draw()
         player.animation:draw(sprites.playerSheet, 500, 550, nil, .5*player.direction, .5, 100, 90)
     
     elseif gameState == 'failed' then
-        local textWidth = love.graphics.getWidth()  
         love.graphics.draw(sprites.backgroundFailed, 0, 0)
+        local textWidth = love.graphics.getWidth()  
         love.graphics.setFont(awesomeFont)
         love.graphics.printf('Billy ate too many burgers and fell asleep!', 0, love.graphics.getHeight()/2 - 50, textWidth, 'center')
         love.graphics.printf('Please try again.', 0, love.graphics.getHeight()/2 - 10, textWidth, 'center')
         love.graphics.printf('Press "ENTER"', 0, love.graphics.getHeight()/2 + 40, textWidth, 'center')
     end 
-
-    -- prints hearts to screen representing player lives
-    if gameState == 'playing' then
-        local textWidth = love.graphics.getWidth() 
-        love.graphics.setFont(awesomeFonthp) 
-        love.graphics.printf('HP', 40, 41, textWidth, 'left')
-        love.graphics.draw(sprites.heart, 88, 45, nil, .045, nil)
-        if lives == 2 or lives == 3 then
-            love.graphics.draw(sprites.heart, 123, 45, nil, .045, nil)
-        end
-        if lives == 3 then
-            love.graphics.draw(sprites.heart, 158, 45, nil, .045, nil)
-        end
-    end
-
 end
-
 
 
 -- OTHER FUNCTIONS -----------------------------------------
@@ -323,11 +326,11 @@ function love.textinput(t) -- manages text input when user types word
 end
 
 function love.keypressed(key)
-    if gameState == 'intro' then
+    if gameState == 'titlescreen' then
         if key == 'return' then
             gameState = 'wordInput'
             sounds.beep:play()
-            return -- exit function after intro screen
+            return -- exit function after titlescreen
         end
     end
 
@@ -422,7 +425,7 @@ end
 
 -- LOADMAP ----------------------------------------------
 -- this function spawns the graphics for 
--- the "Platforms", "Enemies", and "warpForward" objects.
+-- the "Platforms", "Walls", "Enemies", and "Warp" objects.
 -- the value for "mapName" is determined from a query
 -- in love.update()
 
@@ -460,6 +463,7 @@ function resetGame()
     finishSoundPlayed = false
     failedSoundPlayed = false
     resetGameBool = true
+    congratsBGbool = false
 
     player:setPosition(150, 100)
 
