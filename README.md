@@ -1,2 +1,3 @@
 # burger_billy
-Basic kid's game to learn the alphabet
+This is a simple platformer game that helps parents and teachers
+encourage children to learn how to spell.

@@ -22,6 +22,7 @@ function love.load()
     anim8 = require 'libraries/anim8/anim8'
     sti = require 'libraries/Simple-Tiled-Implementation/sti'
     cameraFile = require 'libraries/hump/camera'
+    
     -- dictionary for checking validity of user input
     dictionaryFromFile = {}
     for line in love.filesystem.lines("libraries/dictionary/enable1.txt") do
